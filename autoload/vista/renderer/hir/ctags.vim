@@ -232,6 +232,34 @@ function! s:RenderScopeless(scope_less, rows) abort
   endif
 endfunction
 
+function! s:FindRootOfWithScope(roots, with_scope) abort
+  let array = {} 
+  "let with_scope = g:vista.with_scope
+  for line in a:with_scope
+    let scope = get(line, 'scope', '')
+    
+    if !get(line, 'file', v:false)
+      call vista#util#TryAdd(a:roots, scope, line)
+      "call vista#util#TryAdd(a:roots, scope, 1)
+    endif
+  endfor
+
+  for scope in keys(a:roots)
+    for line in a:roots[scope]
+      if has_key(a:roots, line.name)
+        unlet a:roots[line.name]
+      endif
+    endfor
+  endfor
+
+  for scope in keys(a:roots)
+    let d = {'kind': 'class', 'name': scope, '_type': 'tag', 'file': v:false, 'line':0}
+    unlet a:roots[scope]
+    call vista#util#TryAdd(a:roots, scope, d)
+  endfor
+  
+endfunction
+
 function! s:Render() abort
   let s:scope_seperator = g:vista.source.scope_seperator()
 
@@ -248,7 +276,13 @@ function! s:Render() abort
 
   let scope_less = {}
 
-  let without_scope = g:vista.without_scope
+  let without_scope = g:vista.without_scope 
+
+  let roots_with_scope = {}
+  call s:FindRootOfWithScope(roots_with_scope, g:vista.with_scope)
+  for scope in values(roots_with_scope)
+    call add(without_scope, scope[0])
+  endfor
 
   " The root of hierarchy structure doesn't have scope field.
   for potential_root_line in without_scope
@@ -288,7 +322,7 @@ function! s:Render() abort
   endwhile
 
   let g:vista.vlnum_cache = s:vlnum_cache
-
+  
   return rows
 endfunction
 

@@ -253,7 +253,7 @@ function! s:FindRootOfWithScope(roots, with_scope) abort
   endfor
 
   for scope in keys(a:roots)
-    let d = {'kind': 'class', 'name': scope, '_type': 'tag', 'file': v:false, 'line':0}
+    let d = {'kind': get(a:roots[scope][0], 'scopeKind', ''), 'name': scope, '_type': 'tag', 'file': v:false, 'line':0}
     unlet a:roots[scope]
     call vista#util#TryAdd(a:roots, scope, d)
   endfor
@@ -283,6 +283,8 @@ function! s:Render() abort
   for scope in values(roots_with_scope)
     call add(without_scope, scope[0])
   endfor
+  
+  "echomsg g:vista.without_scope
 
   " The root of hierarchy structure doesn't have scope field.
   for potential_root_line in without_scope

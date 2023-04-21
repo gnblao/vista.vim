@@ -1,3 +1,8 @@
+" File              : ctags.vim
+" Author            : gnblao <gnblao>
+" Date              : 22.04.2023
+" Last Modified Date: 22.04.2023
+" Last Modified By  : gnblao <gnblao>
 " Copyright (c) 2019 Liu-Cheng Xu
 " MIT License
 " vim: ts=2 sw=2 sts=2 et
@@ -278,11 +283,13 @@ function! s:Render() abort
 
   let without_scope = g:vista.without_scope 
 
-  let roots_with_scope = {}
-  call s:FindRootOfWithScope(roots_with_scope, g:vista.with_scope)
-  for scope in values(roots_with_scope)
-    call add(without_scope, scope[0])
-  endfor
+  if &filetype == 'cpp' || &filetype == 'c'
+    let roots_with_scope = {}
+    call s:FindRootOfWithScope(roots_with_scope, g:vista.with_scope)
+    for scope in values(roots_with_scope)
+      call add(without_scope, scope[0])
+    endfor
+  endif 
   
   "echomsg g:vista.without_scope
 

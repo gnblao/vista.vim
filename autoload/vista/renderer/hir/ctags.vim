@@ -255,11 +255,13 @@ function! s:FindRootOfWithScope(roots, with_scope) abort
     endfor
 
     for scope in keys(a:roots)
+        if has_key(a:roots, scope)
         for line in a:roots[scope]
             if has_key(a:roots, line.name)
                 unlet a:roots[line.name]
             endif
         endfor
+        endif
     endfor
 
     for scope in keys(a:roots)
